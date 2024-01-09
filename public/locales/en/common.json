@@ -1,0 +1,17 @@
+{
+  "cancel": "Cancel",
+  "emailAddress": "Email Address",
+  "errorHeading": "Oops!",
+  "errorText": "Sorry, we're unable to process your request at this time. Please try again in a few moments.",
+  "forgotPassword": "Forgot Password?",
+  "getStarted": "Get Started",
+  "gettingStarted": "Getting Started",
+  "pageNotFoundHeading": "Hmm..",
+  "pageNotFoundText": "We're sorry, but the page you requested cannot be found.",
+  "password": "Password",
+  "login": "Log In",
+  "logout": "Log Out",
+  "signIn": "Sign In",
+  "signUp": "Sign Up",
+  "submit": "Submit"
+}
