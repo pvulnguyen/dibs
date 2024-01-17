@@ -28,6 +28,41 @@ export interface Database {
   };
   public: {
     Tables: {
+      profiles: {
+        Row: {
+          display_name: string;
+          first_name: string | null;
+          id: string;
+          last_name: string | null;
+          user_id: string;
+          username: string;
+        };
+        Insert: {
+          display_name: string;
+          first_name?: string | null;
+          id?: string;
+          last_name?: string | null;
+          user_id: string;
+          username: string;
+        };
+        Update: {
+          display_name?: string;
+          first_name?: string | null;
+          id?: string;
+          last_name?: string | null;
+          user_id?: string;
+          username?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'profiles_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'users';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       users: {
         Row: {
           account_id: string | null;
