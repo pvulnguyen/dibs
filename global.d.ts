@@ -3,7 +3,7 @@ declare global {
     ENV: {
       BASE_URL: string;
       SUPABASE_URL: string;
-      SUPABASE_ANON_KEY: string;
+      SUPABASE_KEY: string;
     };
   }
 }

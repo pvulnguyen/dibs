@@ -10,15 +10,15 @@ export function getSupabaseClient(request: Request) {
     throw new Error('SUPABASE_URL is not set');
   }
 
-  if (!env.SUPABASE_ANON_KEY) {
-    throw new Error('SUPABASE_ANON_KEY is not set');
+  if (!env.SUPABASE_KEY) {
+    throw new Error('SUPABASE_KEY is not set');
   }
 
   const cookies = parse(request.headers.get('Cookie') ?? '');
 
   const headers = new Headers();
 
-  const supabase = createServerClient<Database>(env.SUPABASE_URL, env.SUPABASE_ANON_KEY, {
+  const supabase = createServerClient<Database>(env.SUPABASE_URL, env.SUPABASE_KEY, {
     cookies: {
       get: (key) => {
         return cookies[key];
