@@ -1,5 +1,6 @@
 import {ColorSchemeScript, MantineProvider} from '@mantine/core';
 import mantineStyleSheet from '@mantine/core/styles.css';
+import {Notifications} from '@mantine/notifications';
 import notificationsStyleSheet from '@mantine/notifications/styles.css';
 import {cssBundleHref} from '@remix-run/css-bundle';
 import {json} from '@remix-run/node';
@@ -15,16 +16,18 @@ import {
 } from '@remix-run/react';
 import {createBrowserClient} from '@supabase/ssr';
 import {useEffect, useState} from 'react';
-import {getSupabaseClient} from './db/supabase.server';
-import {getEnv} from './utils/get-env';
+import {getSupabaseClient} from '~/db/supabase.server';
+import globalStyleSheet from '~/ui/styles.css';
+import {theme} from '~/ui/theme';
+import {getEnv} from '~/utils/get-env';
 
 import type {LinksFunction, LoaderFunctionArgs} from '@remix-run/node';
-import type {Database} from './db/types';
-import { Notifications } from '@mantine/notifications';
+import type {Database} from '~/db/types';
 
 export const links: LinksFunction = () => [
   {rel: 'stylesheet', href: mantineStyleSheet},
   {rel: 'stylesheet', href: notificationsStyleSheet},
+  {rel: 'stylesheet', href: globalStyleSheet},
   ...(cssBundleHref ? [{rel: 'stylesheet', href: cssBundleHref}] : []),
 ];
 
@@ -71,7 +74,7 @@ export default function App() {
         <ColorSchemeScript />
       </head>
       <body>
-        <MantineProvider>
+        <MantineProvider theme={theme}>
           <Notifications zIndex={1000} />
           <Outlet context={{supabase}} />
           <ScrollRestoration />
