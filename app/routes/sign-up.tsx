@@ -11,73 +11,35 @@ import {
   Title,
 } from '@mantine/core';
 import {useForm} from '@mantine/form';
-import {showNotification} from '@mantine/notifications';
 import {json, redirect} from '@remix-run/node';
-import {Link, useOutletContext} from '@remix-run/react';
+import {Link} from '@remix-run/react';
 import {zodResolver} from 'mantine-form-zod-resolver';
-import {useState} from 'react';
-import {z} from 'zod';
+import {getSession} from '~/auth/get-session';
+import {useSignUpWithEmail} from '~/auth/hooks/use-sign-up-with-email';
+import {authSchema} from '~/auth/validation';
 import {getSupabaseClient} from '~/db/supabase.server';
+import {useSupabase} from '~/root';
 
 import type {LoaderFunctionArgs} from '@remix-run/node';
-import type {SupabaseClient} from '@supabase/supabase-js';
-import type {Database} from '~/db/types';
 
 export async function loader({request}: LoaderFunctionArgs) {
   const {supabase, headers} = getSupabaseClient(request);
-
-  const {
-    data: {session},
-  } = await supabase.auth.getSession();
-
+  const session = await getSession(supabase);
   if (session) return redirect('/', {headers});
 
   return json({});
 }
 
 export default function SignUp() {
-  const {supabase} = useOutletContext<{supabase: SupabaseClient<Database>}>();
-  const [loading, setLoading] = useState(false);
+  const supabase = useSupabase();
+  const {signUp, loading} = useSignUpWithEmail(supabase);
 
   const form = useForm({
     initialValues: {
       email: '',
       password: '',
     },
-    validate: zodResolver(
-      z.object({
-        email: z.string().email(),
-        password: z.string().min(8, 'Password must contain at least 8 characters'),
-      }),
-    ),
-  });
-
-  const handleSubmit = form.onSubmit(async (values) => {
-    setLoading(true);
-
-    const {error} = await supabase.auth.signUp({
-      email: values.email,
-      password: values.password,
-      options: {
-        emailRedirectTo: `${window.ENV.BASE_URL}/auth/callback`,
-      },
-    });
-
-    if (error) {
-      setLoading(false);
-
-      showNotification({
-        message: error.message,
-        color: 'red',
-      });
-    } else {
-      setLoading(false);
-
-      showNotification({
-        message: 'Please check your email for a confirmation link',
-        color: 'green',
-      });
-    }
+    validate: zodResolver(authSchema),
   });
 
   return (
@@ -85,7 +47,7 @@ export default function SignUp() {
       <LoadingOverlay visible={loading} />
       <Paper p="xl" shadow="sm" withBorder>
         <Title ta="center">Sign Up</Title>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={form.onSubmit(signUp)}>
           <TextInput label="Email" mt="xl" {...form.getInputProps('email')} />
           <PasswordInput label="Password" mt="md" {...form.getInputProps('password')} />
           <Button type="submit" mt="xl" fullWidth>
