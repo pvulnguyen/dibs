@@ -1,9 +1,12 @@
+import {ColorSchemeScript, MantineProvider} from '@mantine/core';
+import mantineStyleSheet from '@mantine/core/styles.css';
 import {cssBundleHref} from '@remix-run/css-bundle';
 import {Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration} from '@remix-run/react';
 
 import type {LinksFunction} from '@remix-run/node';
 
 export const links: LinksFunction = () => [
+  {rel: 'stylesheet', href: mantineStyleSheet},
   ...(cssBundleHref ? [{rel: 'stylesheet', href: cssBundleHref}] : []),
 ];
 
@@ -15,12 +18,15 @@ export default function App() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
+        <ColorSchemeScript />
       </head>
       <body>
-        <Outlet />
-        <ScrollRestoration />
-        <Scripts />
-        <LiveReload />
+        <MantineProvider>
+          <Outlet />
+          <ScrollRestoration />
+          <Scripts />
+          <LiveReload />
+        </MantineProvider>
       </body>
     </html>
   );

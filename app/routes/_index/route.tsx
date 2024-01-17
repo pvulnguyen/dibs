@@ -1,7 +1,9 @@
+import { Title } from "@mantine/core";
+
 export default function Index() {
   return (
     <>
-      <h1>Hello, World!</h1>
+      <Title>Hello, World!</Title>
     </>
   );
 }
