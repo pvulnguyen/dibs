@@ -1,18 +1,29 @@
 import {Box, Button, Flex, Paper, Text, TextInput, Title} from '@mantine/core';
 import {useForm} from '@mantine/form';
+import {showNotification} from '@mantine/notifications';
+import {json, redirect} from '@remix-run/node';
+import {useLoaderData, useNavigate} from '@remix-run/react';
 import {IconArrowRight} from '@tabler/icons-react';
-import {useSupabase} from '~/root';
-import {json} from '@remix-run/node';
-import {getSupabaseClient} from '~/db/supabase.server';
+import {zodResolver} from 'mantine-form-zod-resolver';
+import {z} from 'zod';
+import {getSession} from '~/auth/get-session';
 import {getUser} from '~/auth/get-user';
+import {getSupabaseClient} from '~/db/supabase.server';
+import {useSupabase} from '~/root';
 
 import type {LoaderFunctionArgs} from '@remix-run/node';
-import {useLoaderData, useNavigate} from '@remix-run/react';
-import {showNotification} from '@mantine/notifications';
 
 export async function loader({request}: LoaderFunctionArgs) {
   const {supabase, headers} = getSupabaseClient(request);
+
+  const session = await getSession(supabase);
+
   const user = await getUser(supabase);
+
+  if (!session || !user) {
+    throw redirect('/sign-in', {headers});
+  }
+
   return json({user}, {headers});
 }
 
@@ -28,6 +39,14 @@ export default function GettingStarted() {
       firstName: '',
       lastName: '',
     },
+    validate: zodResolver(
+      z.object({
+        username: z.string().min(4, 'Username is not available'),
+        displayName: z.string().min(2, 'Display name is too short'),
+        firstName: z.string().optional(),
+        lastName: z.string().optional(),
+      }),
+    ),
   });
 
   const handleSubmit = form.onSubmit(async (values) => {
@@ -49,6 +68,7 @@ export default function GettingStarted() {
         message: 'Profile created!',
         color: 'green',
       });
+      
       navigate('/');
     }
   });
